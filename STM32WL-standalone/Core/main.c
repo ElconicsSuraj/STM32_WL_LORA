@@ -1,12 +1,7 @@
 
 #include "main.h"
 #include "app_lorawan.h"
-#include "sys_app.h"
-
-//#include "sys_sensors.h"
 #include "stm32wlxx_hal_spi.h"
-
-
 #include "lora_app.h"
 #include "sys_app.h"
 #include "stm32_seq.h"
@@ -21,22 +16,10 @@ int main(void)
 {
 	HAL_Init();
 	SystemClock_Config();
-//	MX_I2C2_Init();
+
 	SystemApp_Init();
 
-	/* Initialize the Sensors *******************/
-	//EnvSensors_Init();
 
-	/* LCD init *********************************/
-//	LCD_Buffer_Init();
-//	MX_GPIO_Init();
-//	MX_SPI1_Init();
-//	ST7789_Init();
-
-	/* LCD test *********************************/
-//	lcd_printf(LCD_BLUE, "Device turned On");
-//	lcd_printf(LCD_BLUE, "Init LoRaWAN Stack...");
-//	lcd_print_buf();
 
 	LoRaWAN_Init();
 

@@ -35,6 +35,14 @@ uint8_t size_txBUFFER = 0;
 uint8_t txBUFFER[100];
 uint8_t isTriggered = 0;
 
+
+
+static uint8_t rx_byte;
+static uint32_t rx_counter = 0;
+static uint8_t downlink_data_buffer[RX_BUFF_SIZE];
+static uint8_t downlink_processing_buffer[RX_BUFF_SIZE];
+uint8_t downlink_data_length = 0;
+
 typedef enum TxEventType_e
 {
 	TX_ON_TIMER,
@@ -99,15 +107,12 @@ void LoRaWAN_Init(void)
 	APP_LOG_COLOR(RESET_COLOR);
 	APP_LOG(0, 1, " \r\n");
 	APP_LOG(0, 1, "########################################\r\n");
-	APP_LOG(0, 1, "###### LoRaWAN Training Session ########\r\n");
-	APP_LOG(0, 1, "###### Savoie Mont Blanc University ####\r\n");
+	APP_LOG(0, 1, "###### ANTZ LORAWAN CONTROL CARD ########\r\n");
+	APP_LOG(0, 1, "###### Suraj Kumar ####\r\n");
 	APP_LOG(0, 1, " \r\n");
 
 
 
-	BSP_LED_Init(LED_BLUE);
-	BSP_LED_Init(LED_GREEN);
-	BSP_LED_Init(LED_RED);
 
 	BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);		// BUTTON_SW1 = PA0, IRQ number = EXTI0_IRQn
 	BSP_PB_Init(BUTTON_SW2, BUTTON_MODE_GPIO);
@@ -257,118 +262,45 @@ void LoRaWAN_Init(void)
 }
 
 
-// Callback for byte reception
-static void byteReception(uint8_t *PData, uint16_t Size, uint8_t Error){
-	static uint32_t index = 0;
 
-	USART2->TDR = *PData;
 
-	if ( *PData == '\r' ){
-		rxBuff[index] = '\0';
+static void byteReception(uint8_t *PData, uint16_t Size, uint8_t Error)
+{
+	rx_byte = *PData;
+	printf("I am here at 1\n ");
 
-		if ( strcmp(rxBuff , "t") == 0){
+	if (rx_counter >= (RX_BUFF_SIZE - 4)) {
+		rx_counter = 0;
+	}
 
-			APP_LOG_COLOR(GREEN);
-			APP_LOG(0, 1, "\tTransmition required by the user\r\n");
-//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Transmission required by user");
+	if (rx_byte == 0) {
+		// Ignore NULL byte
+	}
+	else if (rx_byte == '\n') {
+		downlink_data_buffer[rx_counter++] = '\0';
+
+		if (rx_counter > 1) {
+			memset(downlink_processing_buffer, 0, sizeof(downlink_processing_buffer));
+			memcpy(downlink_processing_buffer, downlink_data_buffer, rx_counter);
+
+			APP_LOG(0, 1, "Received Data: %s\n", downlink_processing_buffer);
+
+			rx_counter = 0;
+
 			UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
-			if (SEND_BY_PUSH_BUTTON == false){
-				UTIL_TIMER_Start(&TxTimer);
-			}
-		}
-		else if ( strcmp(rxBuff , "r") == 0){
-			APP_LOG_COLOR(GREEN);
-			APP_LOG(0, 1, "\tThe Device is resetting...\r\n");
-
-			NVIC_SystemReset();
-		}
-		else if ( strcmp(rxBuff , "help") == 0 || strcmp(rxBuff , "h") == 0){
-			APP_LOG_COLOR(BLUE);
-			APP_LOG(0, 1, "\t- t \t\t transmission of a new LoRaWAN packet\r\n");
-			APP_LOG(0, 1, "\t- r \t\t Reset End-Device\r\n");
-			APP_LOG(0, 1, "\t- h \t\t Help\r\n");
-			APP_LOG(0, 1, "\t- lora \t\t Enter Raw LoRa Packet mode\r\n");
-
-
-		}
-
-		else if ( strcmp(rxBuff , "lora") == 0 ){
-			if( LoRaMode == 0 ){
-				LoRaMode = 1;
-				UTIL_TIMER_Stop(&TxTimer);
-				BSP_PB_DeInit(BUTTON_SW1);
-				APP_LOG_COLOR(RED);
-				APP_LOG(0, 1, "\tLoRaWAN application stops\r\n");
-				APP_LOG_COLOR(BLUE);
-				APP_LOG(0, 1, "\r\n\r\nRaw LoRa Packet Application\r\n\r\n");
-				APP_LOG_COLOR(WHITE);
-				APP_LOG(0, 1, "\r\nType the following command to send a Raw LoRa Packet\r\n");
-				APP_LOG(0, 1, "> Command format : LORA=Frequency:Power:SF:Payload\r\n");
-				APP_LOG(0, 1, "> Example :        LORA=868100000:14:7:01020304 \r\n");
-
-
-			}
-			else{
-				APP_LOG_COLOR(RED);
-				APP_LOG(0, 1, "\r\n - You already entered the Raw LoRa Packet mode\r\n - To send a LoRa command please use this format: LORA=Frequency:Power:SF:Payload\r\n");
-
-			}
-		}
-		else if(isTriggered == 1)
-		{
-			PrepareLoRaFrame("ERROR");
-			isTriggered = 0;
-			index = 0;
-		}
-		else if (LoRaMode == 1){
-			PrepareLoRaFrame(rxBuff);
-		}
-
-		else{
-			APP_LOG_COLOR(GREEN);
-			APP_LOG(0, 1, "\tUnknown command\r\n");
-		}
-		index = 0;
-
-		// Refresh screen
-		UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_DisplayOnLCD), CFG_SEQ_Prio_LCD);
-	}
-	else{
-		rxBuff[index++] = *PData;
-		if ( index == RX_BUFF_SIZE ){
-			isTriggered = 1;
-			index = 0;
+		} else {
+			rx_counter = 0;
 		}
 	}
-	APP_LOG_COLOR(RESET_COLOR);
+	else {
+		downlink_data_buffer[rx_counter++] = rx_byte;
+	}
 }
 
-/**
- * MFX01M2 Center Button pressed
- */
-void CENTER_Pressed_Button(void){
-	APP_LOG(0, 1, "Forced transmission by user\r\n");
-//	lcd_printf(LCD_BLUE, "Forced transmission");
-}
 
-/**
- * MFX01M2 Down Button pressed
- */
-void DOWN_Pressed_Button(void){
-	APP_LOG(0, 1, "\r\nClearing LCD screen...\r\n");
 
-	APP_LOG(0, 1, "Done\r\n");
 
-}
 
-/**
- * MFX01M2 Left Button pressed
- */
-void LEFT_Pressed_Button(void){
-	// Reset device
-	APP_LOG(0, 1, "Reset Forced by user\r\n");
-	NVIC_SystemReset();
-}
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -377,19 +309,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	case  BUTTON_SW1_PIN:
 		UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
 		break;
-	case GPIO_PIN_4:
-		LEFT_Pressed_Button();
-		break;
-	case  GPIO_PIN_9:
-		CENTER_Pressed_Button();
-		UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
-		break;
-	case  GPIO_PIN_8:
-		DOWN_Pressed_Button();
-	case  BUTTON_SW2_PIN:
-		break;
-	case  BUTTON_SW3_PIN:
-		break;
+
 	default:
 		break;
 	}
@@ -419,6 +339,12 @@ void EXTI4_IRQHandler(void)
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
 }
 
+
+
+
+
+
+
 static void SendTxData(void)
 {
 	UTIL_TIMER_Time_t nextTxIn = 0;
@@ -431,82 +357,32 @@ static void SendTxData(void)
 	else AppData.Port = APP_PORT;
 
 	if(PAYLOAD_1234){
-		AppData.Buffer[i++] = 0x01;
-		AppData.Buffer[i++] = 0x02;
-		AppData.Buffer[i++] = 0x03;
-		AppData.Buffer[i++] = 0x04;
-		AppData.Buffer[i++] = 'H';
-		AppData.Buffer[i++] = 'E';
-		AppData.Buffer[i++] = 'L';
-		AppData.Buffer[i++] = 'L';
-		AppData.Buffer[i++] = 'O';
+		AppData.Buffer[i++] = downlink_processing_buffer[0];
+		AppData.Buffer[i++] = downlink_processing_buffer[1];
+		AppData.Buffer[i++] = downlink_processing_buffer[2];
+		AppData.Buffer[i++] = downlink_processing_buffer[3];
+		AppData.Buffer[i++] = downlink_processing_buffer[4];
+		AppData.Buffer[i++] = downlink_processing_buffer[5];
+		AppData.Buffer[i++] = downlink_processing_buffer[6];
+		AppData.Buffer[i++] = downlink_processing_buffer[7];
+		AppData.Buffer[i++] = downlink_processing_buffer[8];
+		AppData.Buffer[i++] = downlink_processing_buffer[9];
 		AppData.BufferSize = i;
+
+
+
 	}
-	else if(!CAYENNE_LPP){
-		if(PAYLOAD_TEMPERATURE){
-			if(SENSOR_ENABLED){
 
-			}
-			else{
-//				AppData.Buffer[i++] = sensor_data.temperature_simulated;
-			}
-		}
-		if(PAYLOAD_HUMIDITY){
-			if(SENSOR_ENABLED){
-			//	AppData.Buffer[i++] = sensor_data.hts221_humidity_int8;
-			}
-			else{
-			//	AppData.Buffer[i++] = sensor_data.humidity_simulated;
-			}
-		}
-		if(USMB_VALVE){
-			//AppData.Buffer[i++] = sensor_data.setpoint;
-			//AppData.Buffer[i++] = sensor_data.temperature_simulated;
-		}
-		else if(ATIM_THAQ){
-			/* Fill the buffer with each useful bytes */
 
-		}
-		else if(WATTECO_TEMPO){
-			/* Fill the buffer with each useful bytes */
-			for (uint16_t w_index = 0/* Watteco index to build the frame */; w_index < 256; w_index += 8){
-			//	AppData.Buffer[i++] = sensor_data.watteco_tempo.data[w_index/64]>>(56-(w_index%64));
-			}
-		}
-		else if(TCT_EGREEN){
 
-		}
 		AppData.BufferSize = i;
-	}
-	else{	// CAYENNE
-		CayenneLppReset();
-		if(PAYLOAD_TEMPERATURE){
-			if(SENSOR_ENABLED){
 
-			}
-			else{
-
-			}
-		}
-
-		if(PAYLOAD_HUMIDITY){
-			if(SENSOR_ENABLED){
-
-			}
-			else{
-
-			}
-		}
-		CayenneLppCopy(AppData.Buffer);
-		AppData.BufferSize = CayenneLppGetSize();
-	}
 
 	LoRaMacTxInfo_t txInfo;
 
 	if (LORAMAC_HANDLER_SUCCESS == LmHandlerSend(&AppData, LORAWAN_DEFAULT_CONFIRMED_MSG_STATE, &nextTxIn, false))
 	{
-		/* This is written with TimeStamp ON > See function timeStampNow in sys_app.c */
-		//APP_LOG(TS_ON, VLEVEL_L, " Packet transmitted\r\n");
+
 	}
 	else if (nextTxIn > 0)
 	{
@@ -514,41 +390,7 @@ static void SendTxData(void)
 	}
 }
 
-uint8_t simuTemperature(void){
-	static uint8_t temp=20, countUP = 0;
-	static int8_t temp_valve = 40; // temp in Q7.1, so 40 = 20°C
-	float error = 0;
 
-	if(USMB_VALVE){
-
-
-		if (abs(error)<1.0 && error != 0){					// Correct the error rounding
-
-		}
-
-		temp_valve += error;
-		return temp_valve;
-	}
-	else{
-		if ( (temp == 20) || (temp == 25)){
-			countUP = (countUP + 1)%2;
-		}
-
-		temp = (countUP == 1)? temp + 1 : temp - 1;
-		return temp;
-	}
-}
-
-uint8_t simuHumidity(void){
-	static uint8_t humid = 50, countUP = 0;
-
-	if ( (humid == 50) || (humid == 60)){
-		countUP = (countUP + 1)%2;
-	}
-
-	humid = (countUP == 1)? humid + 1 : humid - 1;
-	return humid;
-}
 
 
 
@@ -772,23 +614,22 @@ static void OnJoinRequest(LmHandlerJoinParams_t *joinParams)
 			if (joinParams->Mode == ACTIVATION_TYPE_ABP)
 			{
 				APP_LOG(TS_OFF, VLEVEL_L, "\r\n> ABP Activation mode\r\n");
-//				lcd_printf(LCD_DGREEN, "ABP Activation Mode");
-//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
+
 			}
 			else
 			{
 				APP_LOG(TS_OFF, VLEVEL_L, "\r\n> JOINED = OTAA!\r\n");
-//				lcd_printf(LCD_DGREEN, "> JOINED = OTAA");
+
 			}
 
 
 			if(SEND_BY_PUSH_BUTTON == true){
 				APP_LOG(0, 1, "> Packets will be sent every %d ms OR on a Push Button event (B1) \r\n", ADMIN_TxDutyCycleTime);
-//				lcd_printf(LCD_DGREEN, "> Packets send on PB");
+
 			}
 			else{
 				APP_LOG(0, 1, "> Packets will be sent every %d ms OR on a Push Button event (B1) \r\n", ADMIN_TxDutyCycleTime);
-//				lcd_printf(LCD_DGREEN, "> Packets every %ds or PB", ADMIN_TxDutyCycleTime/1000);
+
 			}
 
 			APP_LOG_COLOR(RESET_COLOR);
