@@ -19,8 +19,8 @@
 #include "radio.h"
 #include "send_raw_lora.h"
 #include "stdlib.h"
-#include "lcd_printf.h" /* To print logs on the GFX01M2 LCD screen */
 
+#define LINE_SIZE 34
 #include  "General_Setup.h"
 uint8_t simuTemperature(void);
 uint8_t simuHumidity(void);
@@ -106,9 +106,9 @@ void LoRaWAN_Init(void)
 	APP_LOG(0, 1, "###### Savoie Mont Blanc University ####\r\n");
 	APP_LOG(0, 1, " \r\n");
 
-	lcd_printf(LCD_DEFAULT_FONT_COLOR, "##############################");
-	lcd_printf(LCD_DEFAULT_FONT_COLOR, "## LoRaWAN Training Session ##");
-	lcd_printf(LCD_DEFAULT_FONT_COLOR, "############# USMB ###########");
+//	lcd_printf(LCD_DEFAULT_FONT_COLOR, "##############################");
+//	lcd_printf(LCD_DEFAULT_FONT_COLOR, "## LoRaWAN Training Session ##");
+//	lcd_printf(LCD_DEFAULT_FONT_COLOR, "############# USMB ###########");
 
 	// Check board program
 	// APP_LOG_COLOR(GREEN);
@@ -134,110 +134,110 @@ void LoRaWAN_Init(void)
 		APP_LOG(0, 1, "> Command format : LORA=Frequency:Power:SF:Payload\r\n");
 		APP_LOG(0, 1, "> Example :        LORA=868100000:14:7:01020304 \r\n\r\n");
 
-		lcd_printf(LCD_BLUE, "Raw LoRa Packet Application");
-		lcd_printf(LCD_DEFAULT_FONT_COLOR, "Please refer to the console");
-
-		lcd_print_buf();
+//		lcd_printf(LCD_BLUE, "Raw LoRa Packet Application");
+//		lcd_printf(LCD_DEFAULT_FONT_COLOR, "Please refer to the console");
+//
+//		lcd_print_buf();
 	}
 
 	/***** LoRaWAN Standalone Application  ***********/
 	else{
 		APP_LOG(0, 1, "> Activation mode         %s",(ACTIVATION_MODE == ABP) ? "ABP \r\n" : "OTAA \r\n");
-		lcd_printf(LCD_DEFAULT_FONT_COLOR, "________________________________");
-		lcd_printf(LCD_DEFAULT_FONT_COLOR, "Activation Mode   %s",(ACTIVATION_MODE == ABP) ? "ABP" : "OTAA");
+//		lcd_printf(LCD_DEFAULT_FONT_COLOR, "________________________________");
+//		lcd_printf(LCD_DEFAULT_FONT_COLOR, "Activation Mode   %s",(ACTIVATION_MODE == ABP) ? "ABP" : "OTAA");
 		if(CLASS == CLASS_A){
 			APP_LOG(0, 1, "> Class                   A\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Class             A");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Class             A");
 		}
 		else if(CLASS == CLASS_B){
 			APP_LOG(0, 1, "> Class                   B\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Class             B");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Class             B");
 		}
 		else if(CLASS == CLASS_C){
 			APP_LOG(0, 1, "> Class                   C\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Class             C");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Class             C");   // 158
 		}
 		if(SEND_BY_PUSH_BUTTON == true){
 			APP_LOG(0, 1, "> Send frame              On push button event \r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Send frame        On BP");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Send frame        On BP");
 		}
 		else{
 			APP_LOG(0, 1, "> Send frame every        %d ms\r\n", ADMIN_TxDutyCycleTime);
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Send frame every  %d s", ADMIN_TxDutyCycleTime/1000);
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Send frame every  %d s", ADMIN_TxDutyCycleTime/1000);
 		}
 		APP_LOG(0, 1, "> Spreading Factor        %d \r\n", SPREADING_FACTOR);
 		APP_LOG(0, 1, "> Adaptive Data Rate      %s", (ADAPTIVE_DR == true) ? "ON \r\n" : "OFF \r\n");
 		APP_LOG(0, 1, "> Uplink Frame            %s",(CONFIRMED == true) ? "Confirmed\r\n" : "Unconfirmed\r\n");
 		APP_LOG(0, 1, "> App Port number         %d \r\n", (!WATTECO_TEMPO)? APP_PORT: WATTECO_TEMPO_PORT);
 
-		lcd_printf(LCD_DEFAULT_FONT_COLOR, "Spreading Factor  %d", SPREADING_FACTOR);
-		lcd_printf(LCD_DEFAULT_FONT_COLOR, "ADR               %s", (ADAPTIVE_DR == true) ? "ON" : "OFF");
-		lcd_printf(LCD_DEFAULT_FONT_COLOR, "Uplink Frame      %s", (CONFIRMED == true) ? "Conf" : "Unconf");
-		lcd_printf(LCD_DEFAULT_FONT_COLOR, "App Port Number   %d", (!WATTECO_TEMPO)? APP_PORT: WATTECO_TEMPO_PORT);
+//		lcd_printf(LCD_DEFAULT_FONT_COLOR, "Spreading Factor  %d", SPREADING_FACTOR);
+//		lcd_printf(LCD_DEFAULT_FONT_COLOR, "ADR               %s", (ADAPTIVE_DR == true) ? "ON" : "OFF");
+//		lcd_printf(LCD_DEFAULT_FONT_COLOR, "Uplink Frame      %s", (CONFIRMED == true) ? "Conf" : "Unconf");
+//		lcd_printf(LCD_DEFAULT_FONT_COLOR, "App Port Number   %d", (!WATTECO_TEMPO)? APP_PORT: WATTECO_TEMPO_PORT);
 
 		if(CAYENNE_LPP && SENSOR_ENABLED){
 			APP_LOG(0, 1, "> Payload content:        CayenneLPP, sensors\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   CLPP+se");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   CLPP+se");
 		}
 		else if(CAYENNE_LPP && !SENSOR_ENABLED){
 			APP_LOG(0, 1, "> Payload content:        CayenneLPP, simulated values\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   CLPP+si");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   CLPP+si");
 		}
 		else if(PAYLOAD_TEMPERATURE && !PAYLOAD_HUMIDITY && SENSOR_ENABLED){
 			APP_LOG(0, 1, "> Payload content         1-byte temperature\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   Temp");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   Temp");
 		}
 		else if(PAYLOAD_TEMPERATURE && PAYLOAD_HUMIDITY && SENSOR_ENABLED){
 			APP_LOG(0, 1, "> Payload content         1-byte temperature + humidity\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   T+H");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   T+H");
 		}
 		else if(!PAYLOAD_TEMPERATURE && PAYLOAD_HUMIDITY && SENSOR_ENABLED){
 			APP_LOG(0, 1, "> Payload content         1-byte humidity\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   Hum");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   Hum");
 		}
 		else if(PAYLOAD_TEMPERATURE && !PAYLOAD_HUMIDITY && !SENSOR_ENABLED){
 			APP_LOG(0, 1, "> Payload content         1-byte simulated temperature\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   si Temp");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   si Temp");
 		}
 		else if(PAYLOAD_TEMPERATURE && PAYLOAD_HUMIDITY && !SENSOR_ENABLED){
 			APP_LOG(0, 1, "> Payload content         1-byte simulated temperature + humidity\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   si T+H");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   si T+H");
 		}
 		else if(!PAYLOAD_TEMPERATURE && PAYLOAD_HUMIDITY && !SENSOR_ENABLED){
 			APP_LOG(0, 1, "> Payload content         1-byte simulated humidity\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   si Hum");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   si Hum");
 		}
 		else if(PAYLOAD_1234 == true){
 			APP_LOG(0, 1, "> Payload content         0x01 0x02 0x03 0x04\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   1234");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   1234");
 		}
 		else if(CAYENNE_LPP == true){
 			APP_LOG(0, 1, "> Payload content         CayenneLPP, sensors\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   CLPP");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   CLPP");
 		}
 		else if(USMB_VALVE == true){
 			APP_LOG(0, 1, "> Payload content         1 byte setpoint + 1 byte temperature\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   SP+T");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   SP+T");
 		}
 		else if(ATIM_THAQ == true){
 			APP_LOG(0, 1, "> Payload content         17 bytes ATIM_THAQ simulated payload\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   ATIM");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   ATIM");
 		}
 		else if(WATTECO_TEMPO == true){
 			APP_LOG(0, 1, "> Payload content         32 bytes WATTECO_TEMP'O fixed simulated payload\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   WATTECO");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   WATTECO");
 		}
 		else if(TCT_EGREEN == true){
 			APP_LOG(0, 1, "> Payload content         10 bytes TCT_EGREEN simulated payload\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   TCT");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload content   TCT");
 		}
 		//APP_LOG(0, 1, "> Low Power:              %s",(LOW_POWER == true) ? "ON \r\n" : "OFF \r\n");
 		APP_LOG(0, 1, "\r\n");
-		lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
+//		lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
 		APP_LOG_COLOR(BLUE);
 
 		// Display buffer on screen
-		lcd_print_buf();
+//		lcd_print_buf();
 
 		UTIL_TIMER_Create(&TxLedTimer, 0xFFFFFFFFU, UTIL_TIMER_ONESHOT, OnTxTimerLedEvent, NULL);
 		UTIL_TIMER_Create(&RxLedTimer, 0xFFFFFFFFU, UTIL_TIMER_ONESHOT, OnRxTimerLedEvent, NULL);
@@ -248,7 +248,8 @@ void LoRaWAN_Init(void)
 
 		UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_LmHandlerProcess), UTIL_SEQ_RFU, LmHandlerProcess);
 		UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), UTIL_SEQ_RFU, SendTxData);
-		UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_DisplayOnLCD), UTIL_SEQ_RFU, lcd_print_buf);
+		//UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_DisplayOnLCD), UTIL_SEQ_RFU, lcd_print_buf);  // 251
+		UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_DisplayOnLCD), UTIL_SEQ_RFU, SendTxData);
 
 		LoraInfo_Init();
 
@@ -287,7 +288,7 @@ static void byteReception(uint8_t *PData, uint16_t Size, uint8_t Error){
 
 			APP_LOG_COLOR(GREEN);
 			APP_LOG(0, 1, "\tTransmition required by the user\r\n");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Transmission required by user");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "Transmission required by user");
 			UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
 			if (SEND_BY_PUSH_BUTTON == false){
 				UTIL_TIMER_Start(&TxTimer);
@@ -296,8 +297,8 @@ static void byteReception(uint8_t *PData, uint16_t Size, uint8_t Error){
 		else if ( strcmp(rxBuff , "r") == 0){
 			APP_LOG_COLOR(GREEN);
 			APP_LOG(0, 1, "\tThe Device is resetting...\r\n");
-			lcd_printf(LCD_RED, "The Device is resetting...");
-			lcd_print_buf();
+//			lcd_printf(LCD_RED, "The Device is resetting...");
+//			lcd_print_buf();
 			NVIC_SystemReset();
 		}
 		else if ( strcmp(rxBuff , "help") == 0 || strcmp(rxBuff , "h") == 0){
@@ -307,11 +308,11 @@ static void byteReception(uint8_t *PData, uint16_t Size, uint8_t Error){
 			APP_LOG(0, 1, "\t- h \t\t Help\r\n");
 			APP_LOG(0, 1, "\t- lora \t\t Enter Raw LoRa Packet mode\r\n");
 
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "- t    Transmit new packet");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "- r    Reset");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "- h    Help");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "- lora Enter Raw LoRa mode");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "- t    Transmit new packet");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "- r    Reset");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "- h    Help");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "- lora Enter Raw LoRa mode");
 		}
 
 		else if ( strcmp(rxBuff , "lora") == 0 ){
@@ -328,20 +329,20 @@ static void byteReception(uint8_t *PData, uint16_t Size, uint8_t Error){
 				APP_LOG(0, 1, "> Command format : LORA=Frequency:Power:SF:Payload\r\n");
 				APP_LOG(0, 1, "> Example :        LORA=868100000:14:7:01020304 \r\n");
 
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
-				lcd_printf(LCD_RED, "###############################");
-				lcd_printf(LCD_RED, "LoRaWAN application stopped");
-				lcd_printf(LCD_RED, "###############################");
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "Raw LoRa Packet Application");
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "Please refer to the console");
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
+//				lcd_printf(LCD_RED, "###############################");
+//				lcd_printf(LCD_RED, "LoRaWAN application stopped");
+//				lcd_printf(LCD_RED, "###############################");
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "Raw LoRa Packet Application");
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "Please refer to the console");
 			}
 			else{
 				APP_LOG_COLOR(RED);
 				APP_LOG(0, 1, "\r\n - You already entered the Raw LoRa Packet mode\r\n - To send a LoRa command please use this format: LORA=Frequency:Power:SF:Payload\r\n");
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "Already in Raw LoRa mode");
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "Please refer to the console");
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "Already in Raw LoRa mode");
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "Please refer to the console");
 			}
 		}
 		else if(isTriggered == 1)
@@ -378,7 +379,7 @@ static void byteReception(uint8_t *PData, uint16_t Size, uint8_t Error){
  */
 void CENTER_Pressed_Button(void){
 	APP_LOG(0, 1, "Forced transmission by user\r\n");
-	lcd_printf(LCD_BLUE, "Forced transmission");
+//	lcd_printf(LCD_BLUE, "Forced transmission");
 }
 
 /**
@@ -386,9 +387,9 @@ void CENTER_Pressed_Button(void){
  */
 void DOWN_Pressed_Button(void){
 	APP_LOG(0, 1, "\r\nClearing LCD screen...\r\n");
-	ST7789_Fill_Color(LCD_DEFAULT_BACKGROUND);
+//	ST7789_Fill_Color(LCD_DEFAULT_BACKGROUND);        //389
 	APP_LOG(0, 1, "Done\r\n");
-	lcd_print_buf_complete(0);
+//	lcd_print_buf_complete(0);
 }
 
 /**
@@ -471,11 +472,11 @@ static void SendTxData(void)
 		AppData.Buffer[i++] = 0x02;
 		AppData.Buffer[i++] = 0x03;
 		AppData.Buffer[i++] = 0x04;
-//		AppData.Buffer[i++] = 'H';
-//		AppData.Buffer[i++] = 'E';
-//		AppData.Buffer[i++] = 'L';
-//		AppData.Buffer[i++] = 'L';
-//		AppData.Buffer[i++] = 'O';
+		AppData.Buffer[i++] = 'H';
+		AppData.Buffer[i++] = 'E';
+		AppData.Buffer[i++] = 'L';
+		AppData.Buffer[i++] = 'L';
+		AppData.Buffer[i++] = 'O';
 		AppData.BufferSize = i;
 	}
 	else if(!CAYENNE_LPP){
@@ -524,7 +525,7 @@ static void SendTxData(void)
 			for (uint16_t w_index = 0/* Watteco index to build the frame */; w_index < 256; w_index += 8){
 				AppData.Buffer[i++] = sensor_data.watteco_tempo.data[w_index/64]>>(56-(w_index%64));
 			}
-		} 
+		}
 		else if(TCT_EGREEN){
 			/* Fill the buffer with each useful bytes */
 			AppData.Buffer[i++] = sensor_data.tct_egreen.type;
@@ -618,7 +619,7 @@ uint8_t simuHumidity(void){
 }
 
 /**
- * ATIM TAHQ simulated function payload 
+ * ATIM TAHQ simulated function payload
  * @return atim payload with changing temperature
  */
 atim_payload_t simuAtim(void){
@@ -632,7 +633,7 @@ atim_payload_t simuAtim(void){
 }
 
 /**
- * TCT EGREEN simulated function payload 
+ * TCT EGREEN simulated function payload
  * @return tct payload with changing currant and voltage
  */
 tct_payload_t simuTct(void){
@@ -648,7 +649,7 @@ tct_payload_t simuTct(void){
 }
 
 /**
- * Watteco temp'o simulated function payload 
+ * Watteco temp'o simulated function payload
  * @return fixed payload
  */
 watteco_payload_t simuWatteco(void){
@@ -678,9 +679,9 @@ static void OnTxData(LmHandlerTxParams_t *params)
 #else
 				strcat(stimestamp, "________________");
 #endif // DISPLAY_NB_LINE
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
-				lcd_printf(LCD_RED, stimestamp);
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload");
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
+//				lcd_printf(LCD_RED, stimestamp);
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "Payload");
 
 				APP_LOG(0, 1, "- Payload     ");
 
@@ -689,23 +690,23 @@ static void OnTxData(LmHandlerTxParams_t *params)
 				{
 					if(USMB_VALVE){
 						APP_LOG(0, 1, "Setpoint: %.1f °C | Temperature: %.1f °C", ((float) txBUFFER[0])/2, ((float) txBUFFER[1])/2);
-						lcd_printf(LCD_DEFAULT_FONT_COLOR, "SetP: %.1f \x01""C | Temp: %.1f \x01""C", ((float) txBUFFER[0])/2, ((float) txBUFFER[1])/2);
+//						lcd_printf(LCD_DEFAULT_FONT_COLOR, "SetP: %.1f \x01""C | Temp: %.1f \x01""C", ((float) txBUFFER[0])/2, ((float) txBUFFER[1])/2);
 					}
 					else if(ATIM_THAQ){
 						APP_LOG(0, 1, "Temperature: %.2f °C", ((float) (txBUFFER[6]<<8) + (float) txBUFFER[7])/100.0);
-						lcd_printf(LCD_DEFAULT_FONT_COLOR, "Temperature: %.2f \x01""C", ((float) (txBUFFER[6]<<8) + (float) txBUFFER[7])/100.0);
+//						lcd_printf(LCD_DEFAULT_FONT_COLOR, "Temperature: %.2f \x01""C", ((float) (txBUFFER[6]<<8) + (float) txBUFFER[7])/100.0);
 					}
 					else if(WATTECO_TEMPO){ // Simply print the buffer
 						for(int i=0;i<size_txBUFFER;i++){
 							APP_LOG(0, 1, "%02X ", txBUFFER[i]);
 						}
-						lcd_printf(LCD_DEFAULT_FONT_COLOR, "WATTECO Temp'O buffer");
+//						lcd_printf(LCD_DEFAULT_FONT_COLOR, "WATTECO Temp'O buffer");
 					}
 					else if(TCT_EGREEN){
 						APP_LOG(0, 1, "Currant: %.2f A | Voltage: %03u mV", ((float) (txBUFFER[5]<<8) + (float) txBUFFER[6])/100.0,
 																			(txBUFFER[8]<<8) + txBUFFER[9]);
-						lcd_printf(LCD_DEFAULT_FONT_COLOR, "Cur: %.2f A | Volt: %03u mV", ((float) (txBUFFER[5]<<8) + (float) txBUFFER[6])/100.0,
-								(txBUFFER[8]<<8) + txBUFFER[9]);
+//						lcd_printf(LCD_DEFAULT_FONT_COLOR, "Cur: %.2f A | Volt: %03u mV", ((float) (txBUFFER[5]<<8) + (float) txBUFFER[6])/100.0,
+//								(txBUFFER[8]<<8) + txBUFFER[9]);
 					}
 					else{
 						for(int i=0;i<size_txBUFFER;i++){
@@ -717,7 +718,7 @@ static void OnTxData(LmHandlerTxParams_t *params)
 							APP_LOG(0, 1, "%03u ", txBUFFER[i]);
 						}
 						APP_LOG(0, 1, "(dec)");
-						lcd_printf(LCD_DEFAULT_FONT_COLOR, "  01 02 03 04 (dec)");
+//						lcd_printf(LCD_DEFAULT_FONT_COLOR, "  01 02 03 04 (dec)");
 					}
 				}
 
@@ -725,9 +726,9 @@ static void OnTxData(LmHandlerTxParams_t *params)
 				APP_LOG(TS_OFF, VLEVEL_L, "- Port        %d \r\n",params->AppData.Port);
 				APP_LOG(TS_OFF, VLEVEL_L, "- Fcnt        %d \r\n",params->UplinkCounter);
 				APP_LOG(TS_OFF, VLEVEL_L, "- Data Rate   %d",params->Datarate);
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "- Port        %d",params->AppData.Port);
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "- Fcnt        %d",params->UplinkCounter);
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "- Data Rate   %d", params->Datarate);
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "- Port        %d",params->AppData.Port);
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "- Fcnt        %d",params->UplinkCounter);
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "- Data Rate   %d", params->Datarate);
 
 				switch(params->Datarate)
 				{
@@ -743,7 +744,7 @@ static void OnTxData(LmHandlerTxParams_t *params)
 			else{
 				APP_LOG(TS_OFF, VLEVEL_L, "- Fcnt        %d \r\n",params->UplinkCounter);
 			}
-			lcd_print_buf();
+//			lcd_print_buf();
 		}
 	}
 }
@@ -765,14 +766,14 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
 			BSP_LED_On(LED_BLUE) ;
 			UTIL_TIMER_Start(&RxLedTimer);
 			APP_LOG_COLOR(BOLDBLUE);
-			lcd_printf(LCD_BLUE, "________________________________");
+//			lcd_printf(LCD_BLUE, "________________________________");
 			if (isRxConfirmed == 1){
 				APP_LOG(TS_ON, VLEVEL_L, " Receiving Confirmed Data Down.\r\n");
-				lcd_printf(LCD_BLUE, "Receiving Confirmed Data Down.");
+//				lcd_printf(LCD_BLUE, "Receiving Confirmed Data Down.");
 			}
 			else{
 				APP_LOG(TS_ON, VLEVEL_L, " Receiving Unconfirmed Data Down.\r\n");
-				lcd_printf(LCD_BLUE, "Receiving Unconf Data Down");
+//				lcd_printf(LCD_BLUE, "Receiving Unconf Data Down");
 			}
 
 			APP_LOG_COLOR(BLUE);
@@ -790,7 +791,7 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
 				}
 				APP_LOG(0, 1, "(hex) ");
 				strcat(payload, "(hex)");
-				lcd_printf(LCD_BLUE, payload);
+//				lcd_printf(LCD_BLUE, payload);
 			}
 
 			APP_LOG(TS_OFF, VLEVEL_L, "\r\n");
@@ -801,11 +802,11 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
 			APP_LOG(TS_OFF, VLEVEL_L, "- SNR         %d dB\r\n",params->Snr);
 			APP_LOG_COLOR(RESET_COLOR);
 
-			lcd_printf(LCD_BLUE, "- Port      %d",appData->Port);
-			lcd_printf(LCD_BLUE, "- Slot      RX%s",slotStrings[params->RxSlot]);
-			lcd_printf(LCD_BLUE, "- Data Rate %d",params->Datarate);
-			lcd_printf(LCD_BLUE, "- RSSI      %d dBm",params->Rssi);
-			lcd_printf(LCD_BLUE, "- SNR       %d dB",params->Snr);
+//			lcd_printf(LCD_BLUE, "- Port      %d",appData->Port);
+//			lcd_printf(LCD_BLUE, "- Slot      RX%s",slotStrings[params->RxSlot]);
+//			lcd_printf(LCD_BLUE, "- Data Rate %d",params->Datarate);
+//			lcd_printf(LCD_BLUE, "- RSSI      %d dBm",params->Rssi);
+//			lcd_printf(LCD_BLUE, "- SNR       %d dB",params->Snr);
 		}
 
 		switch (appData->Port)
@@ -816,10 +817,17 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
 					APP_LOG_COLOR(GREEN);
 					switch (appData->Buffer[0])
 					{
-						case 0: LmHandlerRequestClass(CLASS_A); APP_LOG(TS_OFF, VLEVEL_L, "Switch to class A\r\n"); lcd_printf(LCD_DGREEN, "Switch to class A"); break;
-						case 1: LmHandlerRequestClass(CLASS_B); APP_LOG(TS_OFF, VLEVEL_L, "Switch to class B\r\n"); lcd_printf(LCD_DGREEN, "Switch to class B");break;
-						case 2: LmHandlerRequestClass(CLASS_C); APP_LOG(TS_OFF, VLEVEL_L, "Switch to class C\r\n"); lcd_printf(LCD_DGREEN, "Switch to class C");break;
-						default: 								break;
+						case 0: LmHandlerRequestClass(CLASS_A); APP_LOG(TS_OFF, VLEVEL_L, "Switch to class A\r\n");
+						//lcd_printf(LCD_DGREEN, "Switch to class A");
+						break;
+						case 1: LmHandlerRequestClass(CLASS_B); APP_LOG(TS_OFF, VLEVEL_L, "Switch to class B\r\n");
+						//lcd_printf(LCD_DGREEN, "Switch to class B");
+						break;
+						case 2: LmHandlerRequestClass(CLASS_C); APP_LOG(TS_OFF, VLEVEL_L, "Switch to class C\r\n");
+						//lcd_printf(LCD_DGREEN, "Switch to class C");
+						break;
+						default:
+						break;
 					}
 					APP_LOG_COLOR(RESET_COLOR);
 				}
@@ -833,13 +841,13 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
 					if (AppLedStateOn == RESET)
 					{
 						APP_LOG(TS_OFF, VLEVEL_L, "LED 3 (RED) goes OFF\r\n");
-						lcd_printf(LCD_DGREEN, "LED 3 (RED) goes OFF");
+		//				lcd_printf(LCD_DGREEN, "LED 3 (RED) goes OFF");
 						BSP_LED_Off(LED_RED) ;
 					}
 					else
 					{
 						APP_LOG(TS_OFF, VLEVEL_L, "LED 3 (RED) goes ON\r\n");
-						lcd_printf(LCD_DGREEN, "LED 3 (RED) goes ON");
+		//				lcd_printf(LCD_DGREEN, "LED 3 (RED) goes ON");
 						BSP_LED_On(LED_RED) ;
 					}
 					APP_LOG_COLOR(RESET_COLOR);
@@ -853,7 +861,7 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
 					sensor_data.setpoint = appData->Buffer[0];
 					APP_LOG(TS_OFF, VLEVEL_L, "New setpoint is set to %.1f °C\r\n", (float) sensor_data.setpoint/2);
 					APP_LOG_COLOR(RESET_COLOR);
-					lcd_printf(LCD_DGREEN, "New setpoint set to %.1f \x01""C", (float) sensor_data.setpoint/2);
+		//			lcd_printf(LCD_DGREEN, "New setpoint set to %.1f \x01""C", (float) sensor_data.setpoint/2);
 				}
 				break;
 
@@ -863,7 +871,7 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
 		if (is_join != 0) {
 			// Display logs on screen
 			// Avoid to print join mac command
-			lcd_print_buf();
+			//lcd_print_buf();
 		}
 	}
 }
@@ -880,27 +888,27 @@ static void OnJoinRequest(LmHandlerJoinParams_t *joinParams)
 			if (joinParams->Mode == ACTIVATION_TYPE_ABP)
 			{
 				APP_LOG(TS_OFF, VLEVEL_L, "\r\n> ABP Activation mode\r\n");
-				lcd_printf(LCD_DGREEN, "ABP Activation Mode");
-				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
+//				lcd_printf(LCD_DGREEN, "ABP Activation Mode");
+//				lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
 			}
 			else
 			{
 				APP_LOG(TS_OFF, VLEVEL_L, "\r\n> JOINED = OTAA!\r\n");
-				lcd_printf(LCD_DGREEN, "> JOINED = OTAA");
+//				lcd_printf(LCD_DGREEN, "> JOINED = OTAA");
 			}
 
 
 			if(SEND_BY_PUSH_BUTTON == true){
-				APP_LOG(0, 1, "> Packets will be sent on a Push Button event (B1) \r\n");
-				lcd_printf(LCD_DGREEN, "> Packets send on PB");
+				APP_LOG(0, 1, "> Packets will be sent every %d ms OR on a Push Button event (B1) \r\n", ADMIN_TxDutyCycleTime);
+//				lcd_printf(LCD_DGREEN, "> Packets send on PB");
 			}
 			else{
 				APP_LOG(0, 1, "> Packets will be sent every %d ms OR on a Push Button event (B1) \r\n", ADMIN_TxDutyCycleTime);
-				lcd_printf(LCD_DGREEN, "> Packets every %ds or PB", ADMIN_TxDutyCycleTime/1000);
+//				lcd_printf(LCD_DGREEN, "> Packets every %ds or PB", ADMIN_TxDutyCycleTime/1000);
 			}
 
 			APP_LOG_COLOR(RESET_COLOR);
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
 
 			/* Create TIMER for sending next Tx Frame  */
 			// if (EventType == TX_ON_TIMER)
@@ -918,7 +926,7 @@ static void OnJoinRequest(LmHandlerJoinParams_t *joinParams)
 			}
 
 			// Display logs on screen
-			lcd_print_buf();
+//			lcd_print_buf();
 
 			// Send a first frame just after the Join (When using timer event to send packets)
 			if(SEND_BY_PUSH_BUTTON == false){
@@ -930,11 +938,11 @@ static void OnJoinRequest(LmHandlerJoinParams_t *joinParams)
 			APP_LOG_COLOR(RED);
 			APP_LOG(TS_OFF, VLEVEL_L, "\r\n> JOIN FAILED...\r\n");
 
-			lcd_printf(LCD_RED, "> JOIN FAILED...");
-			lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
+//			lcd_printf(LCD_RED, "> JOIN FAILED...");
+//			lcd_printf(LCD_DEFAULT_FONT_COLOR, "");
 
 			// Display logs on screen
-			lcd_print_buf();
+//			lcd_print_buf();
 
 			LmHandlerJoin(ActivationType);
 			APP_LOG_COLOR(RESET_COLOR);

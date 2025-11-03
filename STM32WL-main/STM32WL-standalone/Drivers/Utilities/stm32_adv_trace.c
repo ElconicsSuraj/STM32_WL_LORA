@@ -21,7 +21,7 @@
 #include "stm32_adv_trace.h"
 #include "stdarg.h"
 #include "stdio.h"
-#include "lcd_printf.h"
+//#include "lcd_printf.h"
 
 /** @addtogroup ADV_TRACE
  * @{
